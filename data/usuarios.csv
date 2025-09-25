@@ -1,0 +1,121 @@
+id,nombre,rol,correo
+0, Juan ,ESTUDIANTE, juan0@mail.com 
+1,María**,Alumno, maria1@mail.com
+2a,@Pedro#,profesor, pedro2@mail.com
+3, Lu^is ,alumno,lu3@mail.com
+4,ANA,PROFE, ana4@mail.com
+5,,Estudiante,
+6,Laura,estudiante, laura6@mail.com
+7x,Miguél*,Profesor, miguel7@mail.com 
+8,CARLOS ,profe, carlos8@mail.com
+9, ,ESTUDIANTE, juan9@mail.com
+10, Luisa ,estudiante, luisa10@mail.com
+11, Miguel ,Profesor, 
+12b, Ana^^ ,alumno, ana12@mail.com
+13, @Laura ,PROFE, laura13@mail.com 
+14, Pedro ,ESTUDIANTE, pedro14@mail.com
+15,,alumno, pedro15@mail.com
+16, Juan## ,profesor, juan16@mail.com
+17x, MIGUEL ,Estudiante, miguel17@mail.com
+18, ,alumno, 
+19, María ,PROFE, maria19@mail.com
+20, Pedro ,ESTUDIANTE, pedro20@mail.com
+21, Luisa ,Alumno, luisa21@mail.com
+22a, ANA@ ,profesor, ana22@mail.com
+23, MIGUEL ,PROFE, 
+24, Laura**,estudiante, laura24@mail.com
+25, ,alumno, juan25@mail.com
+26, Carlos^^,Profesor, carlos26@mail.com
+27, Ana##,estudiante, 
+28, PEDRO,PROFE, pedro28@mail.com
+29x, MARÍA ,alumno, maria29@mail.com
+30, ,Estudiante, 
+31,Luisa@@,PROFE, luisa31@mail.com
+32, Miguel**,Alumno, 
+33a, ,Profesor, juan33@mail.com
+34, Laura ,estudiante, 
+35, Juan@@,alumno, juan35@mail.com
+36, Carlos ,PROFE, carlos36@mail.com
+37, Ana**,estudiante, ana37@mail.com
+38x, PEDRO,Profesor, pedro38@mail.com
+39, ,Alumno, 
+40, MIGUEL ,estudiante, miguel40@mail.com
+41, Luisa ,PROFE, 
+42, Laura ,alumno, laura42@mail.com
+43, Juan##,Estudiante, juan43@mail.com
+44a, ,PROFE, 
+45, Ana ,Alumno, ana45@mail.com
+46, PEDRO**,Profesor, 
+47, MIGUEL ,Estudiante, 
+48, Laura##,alumno, laura48@mail.com
+49, ,PROFE, 
+50, Carlos ,Alumno, carlos50@mail.com
+51a, ANA@@,profesor, 
+52, Juan ,PROFE, juan52@mail.com
+53, Luisa**,estudiante, 
+54, PEDRO ,Alumno, pedro54@mail.com
+55, MIGUEL##,Profesor, 
+56, ,Estudiante, 
+57, Laura@@,Alumno, 
+58a, Juan**,profesor, juan58@mail.com
+59, ANA ,PROFE, 
+60, ,Alumno, 
+61, PEDRO ,Estudiante, 
+62, MIGUEL ,Profesor, 
+63, Laura ,Alumno, 
+64, Carlos**,Estudiante, 
+65a, Ana##,Profesor, 
+66, Juan ,Alumno, 
+67, MIGUEL ,PROFE, 
+68, Laura**,estudiante, 
+69, PEDRO ,alumno, 
+70, ,Profesor, 
+71, Carlos ,Alumno, 
+72a, ANA**,Estudiante, 
+73, Luisa ,PROFE, 
+74, MIGUEL ,alumno, 
+75, Laura##,Estudiante, 
+76, PEDRO**,PROFE, 
+77, Juan ,Alumno, 
+78, ,Profesor, 
+79, ANA ,Estudiante, 
+80, Carlos**,PROFE, 
+81a, MIGUEL##,Alumno, 
+82, Laura ,Estudiante, 
+83, PEDRO ,Profesor, 
+84, Luisa**,Alumno, 
+85, ,Estudiante, 
+86, Juan ,Alumno, 
+87, MIGUEL ,PROFE, 
+88, Ana**,Estudiante, 
+89, PEDRO##,Alumno, 
+90, ,Profesor, 
+91, MIGUEL ,Alumno, 
+92a, Laura**,Estudiante, 
+93, Carlos ,Alumno, 
+94, ,Profesor, 
+95, Juan**,Alumno, 
+96, PEDRO ,Estudiante, 
+97, Luisa ,Alumno, 
+98, MIGUEL**,Profesor, 
+99, Laura ,Alumno, 
+100, Ana**,Estudiante, 
+101, ,Profesor, 
+102, Carlos##,Alumno, 
+103a, PEDRO**,Estudiante, 
+104, MIGUEL ,Alumno, 
+105, Laura**,Profesor, 
+106, ,Estudiante, 
+107, Juan**,Alumno, 
+108, MIGUEL ,Profesor, 
+109, Luisa**,Alumno, 
+110, Ana**,Estudiante, 
+111a, ,Profesor, 
+112, Carlos**,Alumno, 
+113, PEDRO ,Estudiante, 
+114, MIGUEL##,Alumno, 
+115, Laura**,Profesor, 
+116, ,Estudiante, 
+117, Juan**,Alumno, 
+118, MIGUEL ,Profesor, 
+119, Luisa**,Alumno, 

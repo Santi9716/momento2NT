@@ -1,0 +1,101 @@
+id,estudiante_id,materia,nota,fecha
+0,1,matemátic@s,3,5,2023/05/10
+1,2,Lengu@@a,aprobado,10-05-2023
+2,3,Hist0ria,excelente,fecha
+3,4,ci3ncias,,"2023-03-15"
+4,5,Ingles,2.8,2023/11/20
+5,6,ingles,4,5,15-07-2023
+6,7,LenguuA,malo,2023/09/12
+7,8,matematicas,-1,2023/02/18
+8,9,ciencias,6.0,2023-04-25
+9,10,historia, ,2023/08/05
+10,11,lengua,3,2,fecha
+11,12,Matematicas, ,2023/01/30
+12,13,Historia,5,0,2023-06-12
+13,14,ingles,excelente,20-11-2023
+14,15,Ciencias,2,7,2023/12/01
+15,16,lengua,4,2023/09/10
+16,17,matematicas,3,2023-07-15
+17,18,Hist0ria,aprobado,12-03-2023
+18,19,ci3ncias,2,9,fecha
+19,20,Ingles, ,2023/05/08
+20,21,Lengua,5,2023-01-14
+21,22,matemátic@s,2,3,2023/06/19
+22,23,ingles,malo,2023/11/27
+23,24,Ciencias,3,4,10-10-2023
+24,25,Historia, ,2023/04/09
+25,26,Matematicas,5,2023-02-17
+26,27,ingles,aprobado,2023/03/12
+27,28,lengua, ,2023/08/30
+28,29,ciencias,2,2023-09-21
+29,30,Hist0ria,3,2023/07/14
+30,31,matemátic@s,4,fecha
+31,32,LenguuA,excelente,2023/06/11
+32,33,Ingles,3,5,2023/11/18
+33,34,Historia,2,8,2023-12-01
+34,35,ciencias,malo,2023/05/22
+35,36,Matematicas, ,2023/02/09
+36,37,lengua, ,fecha
+37,38,ingles,3,2023/07/01
+38,39,Hist0ria,aprobado,2023/10/19
+39,40,Lengu@@a, ,2023/09/04
+40,41,matematicas,6,0,2023-04-11
+41,42,ciencias, ,2023/03/08
+42,43,Ingles,2,2023/11/23
+43,44,Historia, ,2023/05/17
+44,45,Lengua, ,fecha
+45,46,ci3ncias, ,2023/06/30
+46,47,LenguuA,aprobado,2023/01/20
+47,48,matematicas, ,2023/02/15
+48,49,ciencias, ,2023-09-27
+49,50,Historia, ,2023/10/06
+50,51,Ingles,5,2023/08/14
+51,52,Matematicas, ,2023/03/19
+52,53,lengua, ,fecha
+53,54,ci3ncias,4,2023/12/09
+54,55,Lengua, ,2023/04/02
+55,56,Historia,aprobado,2023/11/28
+56,57,Matematicas, ,2023/02/23
+57,58,ingles,2,2023-07-12
+58,59,matemátic@s, ,2023/06/08
+59,60,Lengu@@a, ,2023-10-25
+60,61,Hist0ria, ,fecha
+61,62,LenguuA, ,2023/08/30
+62,63,ciencias,excelente,2023/01/18
+63,64,Historia, ,2023/02/05
+64,65,Lengua, ,2023/03/27
+65,66,Ingles, ,2023/04/21
+66,67,Matematicas, ,2023/05/09
+67,68,lengua, ,fecha
+68,69,ci3ncias, ,2023/07/02
+69,70,Hist0ria, ,2023/09/14
+70,71,Ingles, ,2023/10/31
+71,72,Matematicas, ,2023/12/19
+72,73,LenguuA, ,2023/02/11
+73,74,ciencias, ,2023/03/06
+74,75,Lengu@@a, ,2023/04/17
+75,76,Historia, ,fecha
+76,77,lengua, ,2023/05/13
+77,78,Matematicas, ,2023/06/28
+78,79,Ingles, ,2023/07/20
+79,80,ci3ncias, ,2023/08/22
+80,81,Lengua, ,2023/09/30
+81,82,Historia, ,2023/10/04
+82,83,LenguuA, ,fecha
+83,84,ciencias, ,2023/11/16
+84,85,Matematicas, ,2023/12/08
+85,86,Ingles, ,2023/01/15
+86,87,Hist0ria, ,2023/02/19
+87,88,Lengua, ,2023/03/21
+88,89,matemátic@s, ,2023/04/29
+89,90,Lengu@@a, ,2023/05/25
+90,91,Historia, ,2023/06/14
+91,92,Matematicas, ,2023/07/30
+92,93,LenguuA, ,fecha
+93,94,ciencias, ,2023/08/27
+94,95,Lengua, ,2023/09/19
+95,96,Ingles, ,2023/10/12
+96,97,Historia, ,2023/11/06
+97,98,ci3ncias, ,2023/12/02
+98,99,LenguuA, ,2023/01/09
+99,100,matematicas, ,2023/02/13
