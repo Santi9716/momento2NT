@@ -5,6 +5,7 @@ import pandas as pd
 # ---------------------------
 dfNotas = pd.read_csv("data/notas_limpias.csv")
 dfUsuarios = pd.read_csv("data/usuarios_limpios.csv")
+dfNotas['nota'] = pd.to_numeric(dfNotas['nota'], errors='coerce')
 
 print("\n--- Archivos cargados correctamente ---")
 print("Notas:", dfNotas.shape, "registros")

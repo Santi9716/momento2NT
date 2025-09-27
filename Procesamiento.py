@@ -1,189 +1,172 @@
+
 import pandas as pd
+import re
 from datetime import datetime
 
-# ---------------------------
-# 1. Diagnosticar datos
-# ---------------------------
-dfNotas = pd.read_csv('data/notas.csv')
-dfUsuarios = pd.read_csv('data/usuarios.csv')
+def clean_user_id(raw_id):
+    if pd.isna(raw_id):
+        return None
+    s = str(raw_id).strip()
+    m = re.search(r'\d+', s)
+    return int(m.group()) if m else None
 
-print(dfNotas.info())
-print(dfUsuarios.info())
+def infer_gender(name):
+    if not name or str(name).strip()=='':
+        return 'na'
+    n = str(name).lower()
+    # quick heuristic based on common spanish names endings
+    if any(x in n for x in ['maria','ana','luisa','laura','maría']):
+        return 'femenino'
+    if any(x in n for x in ['juan','pedro','miguel','carlos']):
+        return 'masculino'
+    return 'na'
 
-# ---------------------------
-# 2. Cargar primeros datos
-# ---------------------------
-print(dfUsuarios.head(20))
-print(dfNotas.head(20))
+def parse_notas_raw(path):
+    rows = []
+    with open(path, 'r', encoding='utf-8') as f:
+        lines = [ln.strip() for ln in f if ln.strip()]
+    header = lines[0].split(',')
+    for ln in lines[1:]:
+        parts = [p.strip() for p in ln.split(',')]
+        if len(parts) < 5:
+            # skip malformed
+            continue
+        # id, estudiante_id, materia, nota (may contain commas), fecha (last)
+        id_ = parts[0]
+        estudiante_id = parts[1]
+        materia = parts[2]
+        fecha = parts[-1]
+        nota = ','.join(parts[3:-1]) if len(parts) > 5 else parts[3]
+        rows.append({'id': id_, 'estudiante_id': estudiante_id, 'materia': materia, 'nota': nota, 'fecha': fecha})
+    return pd.DataFrame(rows)
 
-# ---------------------------
-# 3.1 limpieza de datos en Notas
-# ---------------------------
+def normalize_materia(s):
+    if pd.isna(s):
+        return 'desconocida'
+    s = str(s).lower()
+    s = s.replace('@','a').replace('0','o').replace('3','e')
+    s = re.sub(r'[^a-záéíóúñ ]','', s)
+    s = s.strip()
+    return s if s else 'desconocida'
 
-# Nota → numérico (float), inválidos a NaN
-dfNotas['nota'] = pd.to_numeric(dfNotas['nota'], errors='coerce')
+def parse_nota_value(v):
+    if pd.isna(v):
+        return None
+    s = str(v).strip().lower()
+    if s in ['', 'nan']:
+        return None
+    # replace common words
+    if 'excel' in s:
+        return 5.0
+    if 'aprob' in s:
+        return 3.0
+    if 'mal' in s or 'malo' in s:
+        return 1.0
+    # replace comma decimal
+    s = s.replace(',', '.')
+    # keep only digits and dot and minus
+    s = re.sub(r'[^0-9\.\-]', '', s)
+    try:
+        val = float(s)
+        # clamp 0-5
+        if val < 0:
+            val = None
+        if val is not None and val > 5:
+            # if >5 maybe it's malformed, set to 5
+            val = 5.0
+        return val
+    except:
+        return None
 
-# Rellenar notas nulas con promedio general
-promedio_general = dfNotas['nota'].mean()
-dfNotas['nota'].fillna(promedio_general, inplace=True)
+def parse_date(s):
+    if pd.isna(s):
+        return pd.NaT
+    s = str(s).strip()
+    s = s.replace('"','').replace("'",'')
+    if s.lower() in ['fecha','nan','']:
+        return pd.NaT
+    # try common formats
+    for fmt in ['%Y/%m/%d', '%Y-%m-%d', '%d-%m-%Y', '%d/%m/%Y', '%Y/%d/%m', '%d %m %Y', '%Y.%m.%d']:
+        try:
+            return pd.to_datetime(s, format=fmt)
+        except:
+            pass
+    # last resort, let pandas try
+    try:
+        return pd.to_datetime(s, errors='coerce')
+    except:
+        return pd.NaT
 
-# Materia → string limpio
-dfNotas['materia'] = dfNotas['materia'].astype(str).str.strip().str.lower()
-dfNotas['materia'].fillna('desconocida', inplace=True)
+def main():
+    base = __import__('pathlib').Path(__file__).resolve().parents[0]
+    data_dir = base / 'data'
+    usuarios_path = data_dir / 'usuarios.csv'
+    notas_path = data_dir / 'notas.csv'
 
-# estudiante_id → numérico
-dfNotas['estudiante_id'] = pd.to_numeric(dfNotas['estudiante_id'], errors='coerce')
-dfNotas['estudiante_id'].fillna(-1, inplace=True)  # si falta, poner -1 o lo que definas
-dfNotas['estudiante_id'] = dfNotas['estudiante_id'].astype(int)
+    # --- load and normalize usuarios
+    dfu = pd.read_csv(usuarios_path, dtype=str)
+    # ensure columns
+    if 'edad' not in dfu.columns:
+        dfu['edad'] = None
+    if 'genero' not in dfu.columns:
+        dfu['genero'] = None
 
-# Fecha → limpiar espacios y convertir a datetime
-dfNotas['fecha'] = dfNotas['fecha'].astype(str).str.strip()
-dfNotas['fecha'] = pd.to_datetime(dfNotas['fecha'], errors='coerce')
-dfNotas['fecha'].fillna(pd.Timestamp.today().normalize(), inplace=True)
+    # clean id: extract numeric
+    dfu['id_raw'] = dfu['id'].astype(str)
+    dfu['id_num'] = dfu['id_raw'].apply(clean_user_id)
+    # assign new ids for missing
+    max_id = int(dfu['id_num'].dropna().max()) if dfu['id_num'].dropna().size>0 else 0
+    next_id = max_id + 1
+    for idx in dfu.index:
+        if dfu.at[idx,'id_num'] is None:
+            dfu.at[idx,'id_num'] = next_id
+            next_id += 1
+    dfu['id'] = dfu['id_num'].astype(int)
+    dfu.drop(columns=['id_raw','id_num'], inplace=True)
 
-print("--- Notas Limpias ---")
-dfNotas.info()
+    # normalize nombre and genero
+    dfu['nombre'] = dfu['nombre'].astype(str).str.strip()
+    dfu['genero'] = dfu['genero'].fillna('').astype(str).str.strip().replace({'m':'masculino','f':'femenino','na':'na','':None})
+    # infer if still missing
+    dfu['genero'] = dfu.apply(lambda r: infer_gender(r['nombre']) if not r['genero'] else r['genero'], axis=1)
+    dfu['genero'] = dfu['genero'].fillna('na')
 
-# ---------------------------
-# 3.2 limpieza de datos en Usuarios
-# ---------------------------
+    # edad numeric
+    dfu['edad'] = pd.to_numeric(dfu.get('edad', None), errors='coerce')
+    dfu['edad'] = dfu['edad'].fillna( dfu['edad'].mean() ).astype(int)
 
-# Edad → numérico
-dfUsuarios['edad'] = pd.to_numeric(dfUsuarios['edad'], errors='coerce')
-dfUsuarios['edad'].fillna(dfUsuarios['edad'].mean(), inplace=True)
-dfUsuarios['edad'] = dfUsuarios['edad'].astype(int)
+    # --- load and normalize notas with custom parser
+    dfn = parse_notas_raw(str(notas_path))
+    # clean estudiante_id
+    dfn['estudiante_id'] = dfn['estudiante_id'].apply(lambda x: int(re.search(r'\d+', str(x)).group()) if re.search(r'\d+', str(x)) else None)
+    # normalize materia
+    dfn['materia'] = dfn['materia'].apply(normalize_materia)
+    # parse nota numeric
+    dfn['nota'] = dfn['nota'].apply(parse_nota_value)
+    # fill missing notas with global mean (after parsing)
+    mean_nota = dfn['nota'].dropna().mean()
+    if pd.isna(mean_nota):
+        mean_nota = 3.0
+    dfn['nota'] = dfn['nota'].fillna(mean_nota)
+    # parse fecha
+    dfn['fecha'] = dfn['fecha'].apply(parse_date)
+    dfn['fecha'] = pd.to_datetime(dfn['fecha'], errors='coerce').fillna(pd.Timestamp.today().normalize())
 
-# Nombre → string limpio
-dfUsuarios['nombre'] = dfUsuarios['nombre'].astype(str).str.strip().str.lower()
-dfUsuarios['nombre'].fillna('desconocido', inplace=True)
+    # save cleaned files
+    dfn.to_csv(data_dir / 'notas_limpias.csv', index=False)
+    dfu.to_csv(data_dir / 'usuarios_limpios.csv', index=False)
 
-# ID → numérico
-dfUsuarios['id'] = pd.to_numeric(dfUsuarios['id'], errors='coerce')
-dfUsuarios['id'].fillna(dfUsuarios['id'].max() + 1, inplace=True)
-dfUsuarios['id'] = dfUsuarios['id'].astype(int)
+    # merge
+    notas_con_usuarios = pd.merge(dfn, dfu, left_on='estudiante_id', right_on='id', how='inner')
+    print('Merged records:', len(notas_con_usuarios))
+    # Save merged
+    notas_con_usuarios.to_csv(data_dir / 'notas_con_usuarios.csv', index=False)
 
-# Género → string limpio
-dfUsuarios['genero'] = dfUsuarios['genero'].astype(str).str.strip().str.lower()
-dfUsuarios['genero'].fillna('desconocido', inplace=True)
+    # compute averages
+    promedio_estudiantes = notas_con_usuarios.groupby(['estudiante_id','nombre'])['nota'].mean().reset_index().sort_values('nota',ascending=False)
+    promedio_estudiantes.to_csv(data_dir / 'promedio_estudiantes.csv', index=False)
+    print('Promedios saved, sample:')
+    print(promedio_estudiantes.head(10).to_string(index=False))
 
-print("--- Usuarios Limpios ---")
-dfUsuarios.info()
-
-# ---------------------------
-# 4. Guardar datos limpios
-# ---------------------------
-dfNotas.to_csv('data/notas_limpias.csv', index=False)
-dfUsuarios.to_csv('data/usuarios_limpios.csv', index=False)
-
-
-# ---------------------------
-# 5.1 Filtrado con [] (utilizar para filtrar filas)
-# ---------------------------
-
-# Notas mayores o iguales a 3 (aprobados)
-aprobados = dfNotas[dfNotas['nota'] >= 3]
-
-# Ejemplo en matematicas aprobados
-aprobados_mate = dfNotas[(dfNotas['nota'] >= 3) & (dfNotas['materia'] == 'matemáticas')]
-dfNotas.loc[(dfNotas['materia'] == 'matemáticas') & (dfNotas['nota'] > 4), ['estudiante_id', 'nota']]
-# Ejemplo en matematicas reprobados
-reprobados_mate = dfNotas[(dfNotas['materia'] == 'matemáticas') & (dfNotas['nota'] < 3)]
-print(reprobados_mate.head())
-
-#Ejemplo en todas las materias mostrando los primeros 20 registros
-aprobados = dfNotas[dfNotas['nota'] >= 3]
-print(aprobados.head(20))
-
-# Notas aplicadas en un año especifico 20 primeros registros
-notas_2023 = dfNotas[dfNotas['fecha'].dt.year == 2023]
-print(notas_2023.head(20))
-
-# Estudiantes con notas perfectas
-NotasPerfectas = dfNotas[dfNotas['nota'] == 5]
-print(NotasPerfectas)
-
-#Filtrar estudiantes de genero femenino
-femeninos = dfUsuarios[dfUsuarios['genero'] == 'femenino']
-print(femeninos.head())
-
-
-# ---------------------------
-# 5.2 Filtrado con .loc (es mas potente, filtra filas y columnas)
-# ---------------------------
-
-# Todos los estudiantes aprobados
-aprobados = dfNotas.loc[dfNotas['nota'] >= 3, ['estudiante_id', 'nota']]
-print(aprobados.head())
-
-# Notas reprobadas en lengua con los primeros 5 registros
-dfNotas.loc[(dfNotas['materia'] == 'lengua') & (dfNotas['nota'] < 3)].head()
-
-# Reprobados en matematicas, filtrando nombre y fecha 
-reprobados_mate = dfNotas.loc[
-    (dfNotas['materia'] == 'matemáticas') & (dfNotas['nota'] < 3),
-    ['estudiante_id', 'fecha']
-]
-print(reprobados_mate.head())
-
-# Notas perfectas , imprime el id del estudiante,  materia y fecha
-notas_perfectas = dfNotas.loc[dfNotas['nota'] == 5, [ 'estudiante_id', 'materia', 'fecha']]
-print(notas_perfectas)
-
-# Usuarios femeninos con id
-femeninos = dfUsuarios.loc[dfUsuarios['genero'] == 'femenino', ['id', 'nombre']]
-print(femeninos.head())
-
-# Filtrar usuarios sin genero
-sin_genero = dfUsuarios.loc[dfUsuarios['genero'] == 'desconocido', ['id', 'nombre']]
-print(sin_genero.head())
-
-
-# ---------------------------
-# 6.1 Concatenación .concat()
-# ---------------------------
-
-# Unir la cabeza y la cola del listado Usuarios como si fueran dos listas diferentes
-usuarios_parte1 = dfUsuarios.head(50)   # primeros 50
-usuarios_parte2 = dfUsuarios.tail(50)   # últimos 50
-# Concatenamos verticalmente
-usuarios_todos = pd.concat([usuarios_parte1, usuarios_parte2], axis=0)
-print(usuarios_todos.shape)
-
-#Crear una nueva columna con la edad en meses
-edad_meses = dfUsuarios['edad'] * 12
-dfEdadExtra = pd.DataFrame(edad_meses, columns=['edad_meses'])
-# Concatenamos al lado (el axis=1 coloca columnas de forma horizontal)
-usuarios_expandido = pd.concat([dfUsuarios, dfEdadExtra], axis=1)
-print(usuarios_expandido.head())
-
-# ---------------------------
-# 6.2 Fusión .merge()
-# ---------------------------
-
-# Relación de estudiantes con notas
-notas_con_usuarios = pd.merge(
-    dfNotas, dfUsuarios,
-    left_on='estudiante_id',  # columna en dfNotas
-    right_on='id',            # columna en dfUsuarios
-    how='inner'               # tipo de unión
-)
-
-print(notas_con_usuarios.head())
-
-# Calculo de nota promedio por estudiante
-promedio_estudiantes = dfNotas.groupby('estudiante_id')['nota'].mean().reset_index()
-
-# Unimos con dfUsuarios para ver nombres
-promedio_con_nombres = pd.merge(
-    promedio_estudiantes, dfUsuarios,
-    left_on='estudiante_id',
-    right_on='id',
-    how='inner'
-)
-
-print(promedio_con_nombres[['nombre', 'nota']].head())
-
-
-
-
-
+if __name__ == "__main__":
+    main()
